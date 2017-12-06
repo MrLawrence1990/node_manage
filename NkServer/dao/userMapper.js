@@ -4,7 +4,9 @@ var user = {
 	delete: 'delete from user where id=?',
 	queryById: 'select * from user where id=?',
 	queryAll: 'select * from user',
-	getUser:'select * from player'
+	getUser:'select * from player',
+	checkUser:'select * from player where wechat_id=?',
+	addWeChatUser:"sfdsfdsfdsfds",
 };
  
 module.exports = user;
