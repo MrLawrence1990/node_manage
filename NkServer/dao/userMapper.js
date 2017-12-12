@@ -6,7 +6,7 @@ var user = {
 	queryAll: 'select * from user',
 	getUser:'select * from player',
 	checkUser:'select * from player where wechat_id=?',
-	addWeChatUser:"sfdsfdsfdsfds",
+	addWeChatUser:"INSERT into player(avatar_url,wechat_id,user_name,amount,phone,create_time)values('',?,?,'0','',NOW())",
 };
  
 module.exports = user;

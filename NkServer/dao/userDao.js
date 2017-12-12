@@ -38,28 +38,36 @@ module.exports = {
 			"session_key": "xAdeJTybIBApJe5m7Fl+xg==",
 			"openid": "oEawj0YYV6lrXBHfhB9RLnplg2iM"
 		};
-		http.get("http://api.weixin.qq.com/sns/jscode2session?appid=wx11a30002c58bcc40&secret=8797afba30707d049b747457a3a59e05&js_code=071bJUhN1gu1K11gBwkN1OC9iN1bJUhN&grant_type=authorization_code", function(_res) {
-			//			jsonWrite(res, debugRes);
-			console.log("-res ",_res);
-			pool.getConnection(function(err, connection) {
-				connection.query($sql.checkUser, debugRes.openid, function(err, result) {
-					console.log("result ", result);
-					if(result.length == 0) {
-						/*
-						没有用户就添加一个
-						*/
-						connection.query($sql.addWeChatUser, [debugRes.openid], function(err, _result) {
-							console.log("_result ", _result);
+		try {
+			http.get("http://api.weixin.qq.com/sns/jscode2session?appid=wx11a30002c58bcc40&secret=8797afba30707d049b747457a3a59e05&js_code=071bJUhN1gu1K11gBwkN1OC9iN1bJUhN&grant_type=authorization_code", function(_res) {
+				pool.getConnection(function(err, connection) {
+					connection.query($sql.checkUser, debugRes.openid, function(err, result) {
+						if(err){
 							connection.release();
-						});
-					} else {
-						connection.release();
-					}
-					res.json(new Result(200, debugRes));
+							res.json(new Result(103, null));
+						}
+						if(result.length == 0) {
+							console.log("addWeChatUser")
+							/*
+							没有用户就添加一个
+							*/
+							connection.query($sql.addWeChatUser, [debugRes.openid, param.nickName], function(_err, _result) {
+								console.log("_result ",_result)
+								console.log("_err ",_err)
+								connection.release();
+							});
+						} else {
+							connection.release();
+						}
+						res.json(new Result(200, debugRes));
+					});
 				});
+			}).on('error', function(e) {
+				res.json(new Result(102, null));
 			});
-		}).on('error', function(e) {
-			console.log("Got error: " + e.message);
-		});
+		} catch(e) {
+			//TODO handle the exception
+			res.json(new Result(102, null));
+		}
 	}
 };
