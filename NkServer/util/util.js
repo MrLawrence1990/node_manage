@@ -5,7 +5,15 @@ module.exports = {
 		}
 		return target;
 	},
-	isEmpty:function(val){
-		return val?false:true
+	isEmpty: function(val) {
+		return val ? false : true
+	},
+	response: function(err, result, response, connection, call) {
+		if(err) {
+			response.json(new Result(103, err));
+			connection.release();
+		} else {
+			call(result, response, connection);
+		}
 	}
 }
