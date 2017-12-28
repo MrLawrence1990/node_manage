@@ -54,6 +54,9 @@ module.exports = {
 
 		var reserveCall = function(result, response, connection) {
 			response.json(new Result(200, result, '预约成功'));
+			var mailSender = require("../util/mail");
+			var msg = '有用户预约了"'+param.groundId+'号场地"，预约时间 '+"param.date"+'，'+(param.type==0?'18:00-20:00':'20:00-22:00')+'，预约电话：'+param.phone;
+			mailSender.send(msg);
 			connection.release();
 		};
 
