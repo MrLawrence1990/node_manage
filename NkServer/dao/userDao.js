@@ -3,18 +3,8 @@ var http = require('http');
 var Result = require("../entity/result")
 	// 使用连接池，提升性能
 var pool = require("../util/pool");
-var cookieSignature = require("cookie-signature");
+
 module.exports = {
-	getUser: function(req, res, next) {
-		pool.getConnection(function(err, connection) {
-			connection.query($sql.getUser, null, function(err, result) {
-				// 以json形式，把操作结果返回给前台页面
-				// 释放连接 
-				res.json(new Result(200, result));
-				connection.release();
-			});
-		});
-	},
 	regWechatUser: function(req, res, next) {
 		var param = req.query || req.params;
 		var param = {
@@ -24,8 +14,6 @@ module.exports = {
 		const debugRes = {
 			"sessionid": req.sessionID
 		};
-		console.log("----------------debugRes-----------------")
-		console.log(debugRes)
 		try {
 			http.get("http://api.weixin.qq.com/sns/jscode2session?appid=wx11a30002c58bcc40&secret=8797afba30707d049b747457a3a59e05&js_code=071bJUhN1gu1K11gBwkN1OC9iN1bJUhN&grant_type=authorization_code", function(_res) {
 				pool.getConnection(function(err, connection) {

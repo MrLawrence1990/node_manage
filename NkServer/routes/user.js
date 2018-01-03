@@ -5,12 +5,6 @@ var userDao = require('../dao/userDao');
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
-router.get("/addUser",function(req,res,next){
-
-});
-router.get("/getUser",function(req,res,next){
-	userDao.getUser(req,res,next)
-});
 router.get("/regWechatUser",function(req,res,next){
 	userDao.regWechatUser(req,res,next)
 });

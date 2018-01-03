@@ -1,0 +1,70 @@
+<style type="text/css">
+	.login {
+		width: 80%;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
+	
+	@media (min-width: 768px) {
+		.login {
+			width: 30%;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+		}
+	}
+	
+	.email {
+		position: relative;
+	}
+	
+	.email input {
+		padding-right: 46px;
+	}
+	
+	.email i {
+		font-size: 24px;
+		color: #aaaaaa;
+		/* float: right; */
+		border-left: 1px solid;
+		padding-left: 6px;
+		right: 6px;
+		position: absolute;
+		top: 6px;
+		cursor: pointer;
+		width: 30px;
+	}
+	
+	.email i:hover {
+		color: #cccccc;
+	}
+</style>
+<div class="login">
+	<form class="layui-form layui-form-pane" action="">
+		<div class="layui-form-item">
+			<div class="email">
+				<input type="text" lay-verify="required" ng-model="email" placeholder="管理员邮箱" class="layui-input layui-form-danger">
+				<i ng-if="!codeCounting" ng-click="getVerifyCode()" class="layui-icon">&#xe609;</i>
+				<i ng-if="codeCounting">{{codeCount}}</i>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div>
+				<input type="password" lay-verify="required" ng-model="password" placeholder="密码" maxlength="20" class="layui-input layui-form-danger">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div>
+				<input type="text" lay-verify="required" ng-model="code" placeholder="验证码" maxlength="4" class="layui-input layui-form-danger">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div>
+				<button style="float: right;" class="layui-btn layui-btn-small layui-btn-normal" ng-click="login()" ng-disabled="errEmail(email)||!code||code.length<4||!password||password.length<6">登录</button>
+			</div>
+		</div>
+	</form>
+</div>

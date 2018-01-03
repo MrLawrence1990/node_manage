@@ -4,19 +4,29 @@ var smtpTransport = require('nodemailer-smtp-transport');
 // send mail with defined transport object
 
 module.exports = {
-	send: function(content) {
+	send: function(cnf, call) {
+		/*
+			cnf:{
+				"fromText":"",
+				"from":"",
+				"to":"",
+				"subject":"",
+				"text":"",
+				"html":"",
+			}
+		*/
 		var mailOptions = {
-			from: '场地预约<13291829199@163.com>', // 发件地址
-			to: '512826597@qq.com', // 收件列表
-			subject: '场地预约通知', // 标题
+			from: cnf.fromText + '<' + cnf.from + '>', // 发件地址
+			to: cnf.to, // 收件列表
+			subject: cnf.subject, // 标题
 			//text和html两者只支持一种
-			text: 'Hello world ?', // 标题
-			html: content // html 内容
+			text: cnf.text, // 标题
+			html: cnf.html // html 内容
 		};
 		var transport = nodemailer.createTransport(smtpTransport({
 			host: "smtp.163.com",
-//			secure: true, // 使用 SSL
-//			secureConnection: true, // 使用 SSL
+			//			secure: true, // 使用 SSL
+			//			secureConnection: true, // 使用 SSL
 			port: 25,
 			auth: {
 				user: "13291829199@163.com",
@@ -25,10 +35,9 @@ module.exports = {
 		}));
 
 		transport.sendMail(mailOptions, function(error, info) {
-			if(error) {
-				return console.log(error);
+			if(call) {
+				call(error, info);
 			}
-			console.log('Message sent: ' + info.response);
 		});
 
 	}

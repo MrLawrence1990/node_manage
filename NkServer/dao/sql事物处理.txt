@@ -1,0 +1,82 @@
+pool.getConnection(function(connErr, connection) {
+			if(connErr) {
+				res.json(new Result(101, null));
+				return;
+			}
+
+			connection.beginTransaction(function(err) {
+				if(err) {
+					console.log(err);
+					return;
+				}
+			})
+
+			var name1 = 'init',
+				name2 = 'init',
+				age1 = 1,
+				age2 = 1;
+			var test1 = function(callback) {
+				connection.query($sql.test1, ['null', '12'], function(err, result) {
+					console.log('result ', result);
+					if(err) {
+						console.log("err----------------------------- ", err);
+						callback(err, null)
+						return;
+					}
+					name1 = "tracy";
+					age1 = "17";
+					callback(null, result)
+				});
+			};
+			var test2 = function(callback) {
+				connection.query($sql.test1, [name1, age1], function(err, result) {
+					console.log('result ', result);
+					if(err) {
+						console.log("err----------------------------- ", err);
+						callback(err, null)
+						return;
+					}
+					name2 = "alex";
+					age2 = "18";
+					callback(null, result)
+				});
+			};
+			var test3 = function(callback) {
+				connection.query($sql.test1, [name2, age2], function(err, result) {
+					console.log('result ', result);
+					if(err) {
+						console.log("err----------------------------- ", err);
+						callback(err, null)
+						return;
+					}
+					callback(null, result)
+				});
+			};
+
+			async.series([test1, test2, test3], function(transerr, transresults) {
+				console.log("transerr--------------------- ", transerr)
+				if(transerr) {
+					console.log('出现错误,执行回滚');
+					connection.rollback(function(err) {
+						connection.release()
+						if(err) {
+							console.log('rollback err :', err);
+							return;
+						}
+						console.log('回滚成功');
+					});
+				} else {
+					console.log('无错误,执行提交');
+					//执行提交  
+					connection.commit(function(err) {
+						connection.release()
+						if(err) {
+
+							console.log('commit err :', err);
+							return;
+						}
+						console.log('提交成功');
+					});
+				}
+			})
+		})

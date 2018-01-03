@@ -6,15 +6,19 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var index = require('./routes/index');
+var manage = require('./routes/manage');
 var user = require('./routes/user');
+var auth = require('./conf/auth');
 var reserve = require('./routes/reserve');
 //var redis = require('./redis.js').reids;
 var app = express();
-const RedisStore = require('connect-redis')(session);
 // view engine setup
 
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+//app.set('view engine', 'jade');//替换为html模板
+
+app.set('view engine', 'html');
+app.engine('.html', require('ejs').renderFile);
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -22,30 +26,35 @@ app.use(bodyParser.urlencoded({
 	extended: false
 }));
 app.use(cookieParser());
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-const store = new RedisStore({
-	host: 'localhost',
-	port: 6379,
-	//	client: redis,
-	prefix: 'hgk'
-});
 app.use(session({
 	secret: 'sessiontest',
-	name: 'nknknk',
+	name: 'admin',//后端管理用session验证，小程序用openid和组合验证
 	//	store: store,
 	cookie: {
 		maxAge: 80000
 	},
 	resave: false,
-	saveUninitialized: false
+	saveUninitialized: true
 }));
-
+var authMetch = function(url) {
+	var res = false;
+	for(var i = 0; i < auth.length; i++) {
+		if(url.indexOf(auth[i]) > -1) {
+			return true;
+		}
+	}
+	return res;
+};
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
-	let sessionid = req.headers["session"];
-	let _storage = require("./util/redis")
+	//	if(req.originalUrl == "/manage") {
+	//		res.sendfile("views/manage.html");
+	//		return;
+	//	}
 	let url = req.originalUrl;
-	if(url.indexOf('/user/regWechatUser') == -1) {
+	if(url.indexOf('/user/regWechatUser') == -1 && authMetch(url)) {
+		let sessionid = req.headers["session"];
+		let _storage = require("./util/redis")
 		if(!sessionid) {
 			res.json({
 				msg: '无权限的访问'
@@ -71,9 +80,9 @@ app.use(function(req, res, next) {
 		next();
 	}
 });
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
+app.use('/manage', manage);
 app.use('/user', user);
 app.use('/reserve', reserve);
 

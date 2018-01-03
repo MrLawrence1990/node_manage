@@ -12,6 +12,12 @@ router.get("/info", function(req, res, next) {
 	reserveDao.getGroundInfoById(req, res, next)
 });
 router.get("/doreserve", function(req, res, next) {
-	reserveDao.doreserve(req, res, next)
+	reserveDao.doreserve(req, res, next);
+});
+router.get("/myreserve", function(req, res, next) {
+	reserveDao.getReserveList(req, res, next);
+});
+router.get("/cancel", function(req, res, next) {
+	reserveDao.cancel(req, res, next);
 });
 module.exports = router;
